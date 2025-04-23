@@ -2,14 +2,12 @@
 
 **quiz-master-v1** is a multi-user exam preparation web application built using Flask. It features role-based authentication for administrators and users, allowing structured quiz and subject management along with interactive performance analytics.
 
-<table>
-  <tr>
-    <td><img src="docs/screenshots/Quiz_master_landing_page.png" alt="Quiz Master Landing Page" width="480"></td>
-    <td><img src="docs/screenshots/Admin_dashboard_home.png" alt="Admin Dashboard home page" width="480"></td>
-    <td><img src="docs/screenshots/Admin_dashboard_summary.png" alt="Admin Dashboard summary page" width="480"></td>
-    <td><img src="docs/screenshots/User_dashboard_home.png" alt="User Dashboard" width="480"></td>
-  </tr>
-</table>
+<p>
+  <img src="docs/screenshots/Quiz_master_landing_page.png" alt="Quiz Master Landing Page" height="260" width="480">
+  <img src="docs/screenshots/Admin_dashboard_home.png" alt="Admin Dashboard home page" height="260" width="480">
+  <img src="docs/screenshots/Admin_dashboard_summary.png" alt="Admin Dashboard summary page" height="260" width="480">
+  <img src="docs/screenshots/User_dashboard_home.png" alt="User Dashboard" height="260" width="480">
+<p>
 
 
 ## 🚀 Features
