@@ -2,18 +2,14 @@
 
 **quiz-master-v1** is a multi-user exam preparation web application built using Flask. It features role-based authentication for administrators and users, allowing structured quiz and subject management along with interactive performance analytics.
 
-
-<div style="display: flex; overflow-x: auto; gap: 5px; padding: 10px;">
-  <img src="docs/screenshots/Quiz_master_landing_page.png" alt="Quiz Master Landing Page" width="480">
-  <img src="docs/screenshots/Admin_dashboard_home.png" alt="Admin Dashboard home page" width="480">
-  <img src="docs/screenshots/Admin_dashboard_summary.png" alt="Admin Dashboard summary page" width="480">
-  <img src="docs/screenshots/Admin_dashboard_quiz.png" alt="Admin Dashboard quiz page" width="480">
-  <img src="docs/screenshots/User_dashboard_home.png" alt="User Dashboard" width="480">
-  <img src="docs/screenshots/User_dashboard_scores.png" alt="User Dashboard" width="480">
-  <img src="docs/screenshots/User_dashboard_summary.png" alt="User Dashboard summary page" width="480">
-  <img src="docs/screenshots/Quiz_master_login_page.png" alt="Quiz Master Login Page" width="480">
-  <img src="docs/screenshots/Quiz_master_signup_page.png" alt="Quiz Master Signup Page" width="480">
-</div>
+<table>
+  <tr>
+    <td><img src="docs/screenshots/Quiz_master_landing_page.png" alt="Quiz Master Landing Page" width="480"></td>
+    <td><img src="docs/screenshots/Admin_dashboard_home.png" alt="Admin Dashboard home page" width="480"></td>
+    <td><img src="docs/screenshots/Admin_dashboard_summary.png" alt="Admin Dashboard summary page" width="480"></td>
+    <td><img src="docs/screenshots/User_dashboard_home.png" alt="User Dashboard" width="480"></td>
+  </tr>
+</table>
 
 
 ## 🚀 Features
@@ -96,7 +92,7 @@ Upon the first run of the app, an **admin user** is automatically created with *
 The following helpful resources are included in the project repository:
 
 - **Entity-Relationship (ER) Diagram**  
-  Located in: `docs/ER-diagram_Quiz_master`  
+  Located in: `docs/ER-diagram_Quiz_master.drawio`  
   
 
 - **API Documentation**  
