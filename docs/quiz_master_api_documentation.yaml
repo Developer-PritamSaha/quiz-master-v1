@@ -1,0 +1,133 @@
+openapi: 3.0.0
+info:
+  title: Quiz-Master-V1 API documentation
+  description: |
+   Access a comprehensive collection of quizzes and their respective questions from the Quiz Master database.  
+   
+   - **Available APIs:**  
+    * **1. Retrieve all quizzes available up to the current date**  
+    * **2. Fetch the corresponding questions for a selected quiz** 
+   
+   **Error Handling:**
+     * `400` - Bad Request
+     * `404` - Not Found
+     * `500` - Internal Server Error
+   
+   **======================**
+   
+  contact:
+    name: API support - Developer Pritam
+    url: https://github.com/23f1002917
+    
+  version: 1.0.0
+  
+  license:
+    name: Licensed - MIT License
+    url: https://opensource.org/licenses/MIT
+  
+servers:
+  - url: http://127.0.0.1:8000
+    description: Quiz Master Local Dev Server
+    
+paths:
+  /api/available/quizzes:
+    description: End point to read available Quizzes.
+    get:
+      description: Retrieve all available quizzes, both past and present, upto the current date
+      responses:
+        '200':
+          description: Request Successful
+          content:
+            application/json:
+              schema:
+                title: quiz array
+                type: array
+                items:
+                  title: quiz objects
+                  type: object
+                  properties:
+                    quiz_id:
+                      type: integer
+                      example: 6000
+                    subject_name:
+                      type: string
+                      example: Modern Application Development
+                    chapter_name:
+                      type: string
+                      example: API design
+                    no_of_questions:
+                      type: integer
+                      example: 10
+                    total_marks:
+                      type: integer
+                      example: 50
+                    date_of_quiz:
+                      type: string
+                      format: date
+                      example: "2025-03-08"
+                    duration_in_sec:
+                      type: integer
+                      description: "Duration in seconds"
+                      example: 3600
+        "204":
+          description: No quizzes available
+        '500':
+          description: Internal Server Error
+
+
+  /api/quiz/{quiz_id}/questions:
+    description: End point to read available questions for the corresponding quiz.
+    get:
+      description: Retrieve the available corresponding questions for the quiz
+      parameters:
+        - in: path
+          name: quiz_id
+          required: true
+          schema:
+            type: integer
+            example: 6000
+      responses:
+        '200':
+          description: Request Successful
+          content:
+            application/json:
+              schema:
+                title: question array
+                type: array
+                items:
+                  title: question objects
+                  type: object
+                  properties:
+                    question_id:
+                      type: integer
+                      example: 7000
+                    type:
+                      type: string
+                      example: M.C.Q
+                    marks:
+                      type: integer
+                      example: 5
+                    title:
+                      type: string
+                      example: REST
+                    statement:
+                      type: string
+                      example: What does REST stand for?
+                    options:
+                      type: array
+                      items:
+                        type: string
+                      example: 
+                       - "REpresentational Standard Transfer"
+                       - "REal State Transfer" 
+                       - "REference State Transfer" 
+                       - "REpresentational State Transfer"
+                    correct_option:
+                      type: integer
+                      example: 4
+        "204":
+          description: No questions available
+        '404':
+          description: Quiz not found
+        '500':
+          description: Internal server error

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="icon" href="/static/images/icons/icons8-quizlet-120.svg" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/summary_page.css"/>
+</head>
+<body id="user-summary-body">
+    <!-- Navigation Bar -->
+    <nav class="navbar sticky-top navbar-expand-lg bg-body-tertiary" data-bs-theme="dark" id="user-summary-navbar">
+        <div class="container-fluid justify-content-center border-info border-bottom border-opacity-25 border-1">
+            <a class="navbar-brand d-flex align-items-center"  href="/">
+                <img src="/static/images/icons/icons8-quizlet-120.svg" alt="Quiz-Master-Logo" width="40" height="40" class="d-inline-block  align-text-bottom">
+                
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="/user" class="nav-link">Home</a></li>
+                    <li><a href="/user/scores" class="nav-link">Scores</a></li>
+                    <li><a href="/user/summary" class="nav-link active">Summary</a></li>
+                </ul>
+
+                <div class="container-fluid d-flex justify-content-center">
+                    <span class="navbar-text text-info fw-bold">
+                      User Dashboard
+                    </span>
+                </div>
+    
+                <form action="/user/search/summary" id="search-summary" method="GET" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" name="query_str" id="search_str"  value="{{search_val}}" class="form-control" placeholder="⌕  Quiz Attempt Date..." aria-label="Search">
+                </form>
+                
+                <ul class="navbar-nav d-flex flex-wrap align-items-center justify-content-center ">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img src="/static/images/icons/icons8-admin-1.png" 
+                            alt="Profile" class="rounded-circle" width="32" height="32"> 
+                       
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text">Welcome,</span></li>
+                        <li><span class="dropdown-item-text text-info">{{ u_name }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>    
+                    </ul>
+                </li>
+                </ul>
+            </div>
+          </div>
+    </nav>
+
+    <div class="container mt-4"> 
+        {% if user_score_len < 1 %}
+        <div class="d-flex justify-content-center align-items-center mt-5">      
+            {% if search_flag == 1 %}
+            <img src="/static/images/placeholder_img/undraw_faq_h01d.svg" alt="No search result found" width="400px" height="460px" class="p-4"/>
+        </div>
+        <h5 class="text-white text-center">No Search Result Found.</h5>
+            {% else %}
+            <img src="/static/images/placeholder_img/undraw_data_0ml2.svg" alt="No quiz available right now" width="420px" height="460px" class="p-4"/>
+        </div>
+        <h5 class="text-white text-center">Summary Charts Not Available Yet.</h5>
+            {% endif %}
+    </div>
+        {% else %}
+          <div class="row row-cols-md-2 g-3 mb-3">
+            <div class="col">
+                <!--Chart 1-->
+                <div class="p-2 d-flex justify-content-center" style="background-color: rgb(253, 253, 253); border-radius: 8px;">
+                    <canvas id="sub-avg-score-wise" width="350px" height="350px"></canvas>
+                </div>
+            </div>
+        
+            <div class="col">
+                <!--Chart 2-->
+                <div class="p-2 d-flex justify-content-center" style="background-color: rgb(245, 248, 250); border-radius: 8px;">
+                    <canvas id="quiz-attempt-wise" width="350px" height="350px"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <!--Chart 3-->
+            <div class="col"> 
+                <div class="p-3 d-flex justify-content-center" style="background-color: rgb(240, 252, 246); border-radius: 8px;">
+                    <canvas id="quiz-score-wise" width="800px" height="400px"></canvas>
+                </div>
+            </div>
+        </div>  
+          
+    </div>
+        {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>       
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+         // Chart 1: Subject-wise Average Quiz Score chart
+        const chart1 = document.getElementById('sub-avg-score-wise');
+        const l1 = {{ sub_name|tojson }};
+        const d1 = {{ sub_average_score|tojson }};
+        const data1 = {
+            labels: l1,
+            datasets: [{
+                label: 'Average Score',
+                data: d1,
+                fill: true,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(255, 99, 132)'
+            }]
+        };
+        new Chart(chart1, {
+            type: 'radar',
+            data: data1,
+            options: {
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                plugins: {
+                    title: {
+                    display: true,
+                    text: 'Subject-wise Average Quiz Score',
+                    font: { size: 16, weight: 'bold' },
+                    padding: { top: 2, bottom: 5 }
+                    }
+                }
+            },
+        });
+    
+        // Chart 2: Number of quiz attempts chart
+        const chart2 = document.getElementById('quiz-attempt-wise');
+        const l2 = {{ quiz_id|tojson }};
+        const d2 = {{ quiz_attempt_count|tojson }};
+        const data2 = {
+            labels: l2,
+            datasets: [{
+                label: 'Attempts',
+                data: d2,
+                hoverOffset: 6
+            }]
+        };
+        new Chart(chart2, {
+            type: 'doughnut',
+            data: data2,
+            options:{
+                plugins: {
+                    title: {
+                    display: true,
+                    text: 'Number of Quiz Attempts',
+                    font: { size: 16, weight: 'bold' },
+                    padding: { top: 2, bottom: 5 }
+                    }
+                }
+            }
+        });
+
+        // Chart 3: Recent Quiz attempt Score chart
+        const chart3 = document.getElementById('quiz-score-wise');
+        const l3 = {{ recent_quiz_id|tojson }};
+        const d3 = {{ recent_quiz_score|tojson }};
+        const data3 = {
+            labels: l3,
+            datasets: [
+                {
+                    label: 'Quiz Score',
+                    type: 'bar',
+                    data: d3,
+                    backgroundColor: [
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 205, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                    'rgb(153, 102, 255)',
+                    'rgb(255, 159, 64)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 99, 132)',
+                    'rgb(201, 203, 207)'
+                    ],
+                    borderWidth: 2,
+                    yAxisID: 'y-left'
+                }
+            ]
+        }
+        new Chart(chart3, {
+            type: 'bar',
+            data: data3,
+            options: {
+                responsive: true,
+                scales: {
+                    'y-left': {
+                        type: 'linear',
+                        position: 'left',
+                        title: { display: true, text: 'Score (%)' },
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    title: {
+                    display: true,
+                    text: 'Recent Quiz Attempt Scores',
+                    font: { size: 16, weight: 'bold' },
+                    padding: { top: 0, bottom: 5 }
+                    }
+                }
+            }
+        });
+        
+    </script>
+
+    <script>
+        // If the search field is cleared then reloads the page with all Upcomming quizzes
+         document.getElementById("search_str").addEventListener("input", function() {
+             if (this.value === "") {
+                 document.getElementById("search-summary").submit();
+             }
+         });
+     </script>
+
+</body>
+</html>

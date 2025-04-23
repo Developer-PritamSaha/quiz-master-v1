@@ -1,0 +1,37 @@
+.navbar{
+    background: linear-gradient(110deg,  #08084c, #131a5e, #1e2c71, #293e83, #345096, #3a56a1, #415bab, #4861b6, #515aba, #5d51bd, #7652c4);
+}
+body {
+    background: linear-gradient(102deg,  #08084c, #131a5e, #1e2c71, #293e83, #345096, #3a56a1, #415bab, #4861b6, #515aba, #5d51bd, #7652c4, #9f5bdf);
+    background-attachment: fixed;
+}
+
+.card{
+    min-height: 80vh;
+}
+
+.card-body img:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.table-responsive{
+    max-height: 68vh; 
+    overflow-y: auto;
+}
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-responsive thead th {
+    position: sticky;
+    top: 0; 
+    background: rgb(241, 246, 250);
+    border-bottom: 2px solid #041062;
+    z-index: 10;
+}
+
+.click{
+    cursor:pointer;
+}

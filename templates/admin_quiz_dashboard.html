@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="icon" href="/static/images/icons/icons8-quizlet-120.svg" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/admin_dashboard.css"/>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar sticky-top navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid justify-content-center border-info border-bottom border-opacity-25 border-1">
+            <a class="navbar-brand d-flex align-items-center"  href="/">
+                <img src="/static/images/icons/icons8-quizlet-120.svg" alt="Quiz-Master-Logo" width="40" height="40" class="d-inline-block  align-text-bottom">
+                <!-- Quiz Master -->
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="/admin" class="nav-link ">Home</a></li>
+                    <li><a href="/admin/quiz" class="nav-link active">Quiz</a></li>
+                    <li><a href="/admin/summary" class="nav-link ">Summary</a></li>
+                </ul>
+
+                <div class="container-fluid d-flex justify-content-center">
+                    <span class="navbar-text text-info fw-bold">
+                      Admin Dashboard
+                    </span>
+                </div>
+    
+                <form action="/admin/search/quiz" id="search-quiz" method="GET" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" name="query_str" id="search_str"  value="{{search_val}}" class="form-control" placeholder="⌕   Quiz, Questions..." aria-label="Search">
+                </form>
+                
+                <ul class="navbar-nav d-flex flex-wrap align-items-center justify-content-center ">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img src="/static/images/icons/icons8-admin-1.png" 
+                            alt="Profile" class="rounded-circle" width="32" height="32"> 
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text">Welcome,</span></li>
+                        <li><span class="dropdown-item-text text-warning">{{ u_name }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>    
+                    </ul>
+                </li>
+                </ul>
+            </div>
+          </div>
+    </nav>
+
+    <!-- Quiz cards -->
+    <div class="container mt-4"> 
+        {% if quizzes|length < 1 %}
+            {% if search_flag == 1 %}
+        <div class="d-flex justify-content-center align-items-center mt-5">
+            <img src="/static/images/placeholder_img/undraw_faq_h01d.svg" alt="No search result found" width="400px" height="460px" class="p-4"/>
+        </div>
+        <h5 class="text-white text-center">No Search Result Found.</h5>
+            {% else %}
+        <div class="d-flex justify-content-center align-items-center add-quiz-img mt-5">
+            <img src="/static/images/placeholder_img/undraw_questions_g2px.svg" alt="An image to add quiz" width="420px" height="460px" class="p-4" data-bs-toggle="modal" data-bs-target="#QuizModal"/>
+        </div>
+        <div class="clickable">
+            <h5 class="text-white text-center" data-bs-toggle="modal" data-bs-target="#QuizModal">Add New Quiz!</h5>
+        </div>
+            {% endif %}
+    </div>
+        {% else %}
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+            {% for q in quizzes %}
+        <div class="col">
+            <div class="card mb-2 border border-primary-subtle shadow bg-body-tertiary rounded" > 
+                <div class="card-header text-center">
+                    <h4 style="color:rgb(5, 119, 117);font-weight: 650; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#DetailsQuizModal{{q['id']}}">{{q_name[q['id']]}}</h4>
+                </div>
+                <div class="card-body">
+                    {% if questions[q["id"]]|length >= 1 %}
+                    <div class="table-responsive">
+                        <table class="table allign-middle table-hover border-primary"> 
+                            <thead>
+                                <tr>
+                                    <th style="color:rgb(9, 3, 97); text-align: center;">Question Title</th>
+                                    <th style="color:rgb(9, 3, 97); text-align: center;">Question Marks</th>
+                                    <th style="color:rgb(9, 3, 97); text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for qt in questions[q["id"]] %}
+                                <tr>
+                                    <td class="text-center">
+                                        <a style="cursor: pointer; color: rgb(79, 16, 137); font-weight: 500;" data-bs-toggle="modal" data-bs-target="#DetailsQuestionModal{{qt['id']}}">{{ qt["question_title"] }}</a>
+                                    </td>
+                                    <td class="text-success text-center">{{ qt["marks"] }}</td>
+                                    <td class="text-center">          
+                                        <img src="/static/images/icons/icons8-edit.svg" alt="edit question {{ qt['question_title'] }}" height="20px" width="20px" data-bs-toggle="modal" data-bs-target="#EditQuestionModal{{qt['id']}}"> 
+                                        <span style="margin-right: 4px;"></span>
+                                            |
+                                        <span style="margin-left: 4px;"></span>
+                                        <img src="/static/images/icons/icons8-delete1.svg" alt="delete question {{ qt['question_title'] }}" height="20px" width="20px" data-bs-toggle="modal" data-bs-target="#DeleteQuestionModal{{qt['id']}}">       
+                                    </td>
+                                </tr>
+                                <!-- Delete Question Modal -->
+                                <form action="/admin/delete/question/{{ q['id'] }}/{{ qt['id'] }}" method="POST" id="delete-question-{{qt['id']}}">
+                                    <div class="modal fade" id="DeleteQuestionModal{{qt['id']}}" tabindex="-1" aria-labelledby="QuesDelModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content"> 
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="QuesDelModalLabel">Delete Question</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                                </div>
+                                                <div class="modal-body mt-2">
+                                                    <p style="font-weight:500;">Are you sure you wanted to delete question "{{ qt['question_title'] }}"?</p>                 
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Edit Question Modal -->
+                                <form action="/admin/edit/question/{{ q['id'] }}/{{ qt['id'] }}" method="POST" id="questionEdit-{{qt['id']}}">
+                                    <div class="modal fade" id="EditQuestionModal{{ qt['id'] }}" tabindex="-1" aria-labelledby="QuesEditModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content"> 
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="QuesEditModalLabel">Edit Question</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="number" class="form-control" id="marksEdit-{{qt['id']}}" placeholder="5, 10, 2 etc." name="question_marks" value="{{ qt['marks'] }}" required> 
+                                                        <label for="marksEdit-{{qt['id']}}">Marks</label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" class="form-control" id="titleEdit-{{qt['id']}}" placeholder="Class,Objects etc." name="question_title" value="{{ qt['question_title'] }}" required> 
+                                                        <label for="titleEdit-{{qt['id']}}">Question Title</label>
+                                                    </div>
+                                                    <div class="form-floating mb-2">
+                                                        <textarea class="form-control" placeholder="Question Statement.." id="statementEdit-{{qt['id']}}" style="height: 100px" name="ques_statement" required>{{ qt['question_statement'] }}</textarea> 
+                                                        <label for="statementEdit-{{qt['id']}}">Question Statement</label>
+                                                    </div>
+                                                    <div class="form-floating mb-1 mx-3">
+                                                        <input type="text" class="form-control" id="option1Edit-{{qt['id']}}" name="option1" value="{{options[qt['id']][0]['option_statement']}}" required> 
+                                                        <label for="option1Edit-{{qt['id']}}">Option 1</label>
+                                                    </div>
+                                                    <div class="form-floating mb-1 mx-3">
+                                                        <input type="text" class="form-control" id="option2Edit-{{qt['id']}}" name="option2" value="{{options[qt['id']][1]['option_statement']}}" required> 
+                                                        <label for="option2Edit-{{qt['id']}}">Option 2</label>
+                                                    </div>
+                                                    <div class="form-floating mb-1 mx-3">
+                                                        <input type="text" class="form-control" id="option3Edit-{{qt['id']}}" name="option3" value="{{options[qt['id']][2]['option_statement']}}" required> 
+                                                        <label for="option3Edit-{{qt['id']}}">Option 3</label>
+                                                    </div>
+                                                    <div class="form-floating mb-2 mx-3">
+                                                        <input type="text" class="form-control" id="option4Edit-{{qt['id']}}" name="option4" value="{{options[qt['id']][3]['option_statement']}}" required> 
+                                                        <label for="option4Edit-{{qt['id']}}">Option 4</label>
+                                                    </div>
+                                                    <div class="mx-5">
+                                                        <select name="correct_option" id="selectDuration" class="form-select" required>
+                                                            <option value="" disabled>Select Correct Option</option> 
+                                                            {% if qt['correct_option'] == 1 %}
+                                                                <option value="1" selected>Option 1</option>
+                                                            {% else %}
+                                                                <option value="1">Option 1</option>
+                                                            {% endif %}
+
+                                                            {% if qt['correct_option'] == 2 %}
+                                                                <option value="2" selected>Option 2</option>
+                                                            {% else %}
+                                                                <option value="2">Option 2</option>
+                                                            {% endif %}
+
+                                                            {% if qt['correct_option'] == 3 %}
+                                                                <option value="3" selected>Option 3</option>
+                                                            {% else %}
+                                                                <option value="3">Option 3</option>
+                                                            {% endif %}
+
+                                                            {% if qt['correct_option'] == 4 %}
+                                                                <option value="4" selected>Option 4</option>
+                                                            {% else %}
+                                                                <option value="4">Option 4</option>
+                                                            {% endif %}
+                                                        </select> 
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Details Question Modal -->
+                                <div class="modal fade" id="DetailsQuestionModal{{qt['id']}}" tabindex="-1" aria-labelledby="QuesDetModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content"> 
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="QuesDetModalLabel">Question Details</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3 mx-2">
+                                                    <label for="floatingInput" class="text-secondary">Quiz Name:</label>
+                                                    <input type="text" class="form-control" id="floatingInput"  value="{{ q_name[q['id']] }}" disabled>
+                                                </div>
+                                                <div class="mb-3 mx-2">
+                                                    <label for="floatingInput" class="text-secondary">Marks:</label>
+                                                    <input type="text" class="form-control" id="floatingInput"  value="{{ qt['marks'] }}" disabled>
+                                                </div>
+                                                <div class="mb-3 mx-2">
+                                                    <label for="floatingInput" class="text-secondary">Question Title:</label>
+                                                    <input type="text" class="form-control" id="floatingInput"  value="{{ qt['question_title'] }}" disabled>
+                                                </div>
+                                                <div class="mb-2 mx-2">
+                                                    <label for="floatingTextarea" class="text-secondary">Question Statement:</label>
+                                                    <textarea class="form-control" id="floatingTextarea" style="height: 80px" disabled>{{ qt['question_statement'] }}</textarea>
+                                                </div>    
+                                                <div class="mb-1 mx-3">
+                                                    <label for="floatingInput" class="text-secondary">Option 1:</label>
+                                                    <input type="text" class="form-control" id="floatingInput" value="{{options[qt['id']][0]['option_statement']}}" disabled> 
+                                                    
+                                                </div>
+                                                <div class="mb-1 mx-3">
+                                                    <label for="floatingInput" class="text-secondary">Option 2:</label>
+                                                    <input type="text" class="form-control" id="floatingInput" value="{{options[qt['id']][1]['option_statement']}}" disabled> 
+                                                    
+                                                </div>
+                                                <div class="mb-1 mx-3">
+                                                    <label for="floatingInput" class="text-secondary">Option 3:</label>
+                                                    <input type="text" class="form-control" id="floatingInput" value="{{options[qt['id']][2]['option_statement']}}" disabled> 
+                                                    
+                                                </div>
+                                                <div class="mb-3 mx-3">
+                                                    <label for="floatingInput" class="text-secondary">Option 4:</label>
+                                                    <input type="text" class="form-control" id="floatingInput" value="{{options[qt['id']][3]['option_statement']}}" disabled> 
+                                                    
+                                                </div>
+                                                <div class="mx-5">
+                                                    <label for="floatingInput" class="text-secondary">Correct Option:</label>
+                                                    <input type="text" class="form-control" id="floatingInput" value="{{qt['correct_option']}}" disabled> 
+                                                    
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                    {% else %}
+                    <p id="new-chap" data-bs-toggle="modal" data-bs-target="#QuestionModal{{q['id']}}">Add new questions!</p>
+                    {% endif %}             
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <button type="button" style="font-weight: 500;" class="btn btn-outline-secondary mt-auto" data-bs-toggle="modal" data-bs-target="#QuestionModal{{q['id']}}">
+                    + Question
+                    </button>
+                    
+                    <!-- Add Question modal -->
+                    <form action="/admin/add/{{ q['id'] }}/question" method="POST" id="add-new-question-{{ q['id'] }}">
+                        <div class="modal fade" id="QuestionModal{{q['id']}}" tabindex="-1" aria-labelledby="QuestionModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content"> 
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="QuestionModalLabel">Add Question</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3 mx-3">
+                                            <!-- <select></select> - to be implemented -->
+                                            <label for="q-type" class="text-secondary">Question Type</label>
+                                            <input type="text" class="form-control" id="q-type" placeholder="M.C.Q, Matching, True/False, Fill the blanks etc." name="question_type" value="M.C.Q" disabled>        
+                                        </div>
+                                        <div class="form-floating mb-3 mx-3">
+                                            <!-- <select></select> - to be implemented -->
+                                            <input type="number" class="form-control" id="marks-{{ q['id'] }}" placeholder="5, 10, 2 etc." name="question_marks" required> 
+                                            <label for="marks-{{ q['id'] }}">Marks</label>
+                                        </div>
+                                        <div class="form-floating mb-2 mx-1">
+                                            <input type="text" class="form-control" id="title-{{ q['id'] }}" placeholder="Class,Objects etc." name="question_title" required> 
+                                            <label for="title-{{ q['id'] }}">Question Title</label>
+                                        </div>
+                                        <div class="form-floating mb-2">
+                                            <textarea class="form-control" placeholder="Question Statement.." id="statement-{{ q['id'] }}" style="height: 100px" name="question_statement" required></textarea> 
+                                            <label for="statement-{{ q['id'] }}">Question Statement</label>
+                                        </div>
+                                        <div class="form-floating mb-1 mx-3">
+                                            <input type="text" class="form-control" id="option1-{{ q['id'] }}" name="option1" required> 
+                                            <label for="option1-{{ q['id'] }}">Option 1</label>
+                                        </div>
+                                        <div class="form-floating mb-1 mx-3">
+                                            <input type="text" class="form-control" id="option2-{{ q['id'] }}" name="option2" required> 
+                                            <label for="option2-{{ q['id'] }}">Option 2</label>
+                                        </div>
+                                        <div class="form-floating mb-1 mx-3">
+                                            <input type="text" class="form-control" id="option3-{{ q['id'] }}" name="option3" required> 
+                                            <label for="option3-{{ q['id'] }}">Option 3</label>
+                                        </div>
+                                        <div class="form-floating mb-2 mx-3">
+                                            <input type="text" class="form-control" id="option4-{{ q['id'] }}" name="option4" required> 
+                                            <label for="option4-{{ q['id'] }}">Option 4</label>
+                                        </div>
+                                        <div class="mx-5">
+                                            <select name="correct_option" id="selectDuration" class="form-select" required>
+                                              <option value="" selected disabled>Select Correct Option</option>                          
+                                              <option value="1" >Option 1</option>
+                                              <option value="2" >Option 2</option>
+                                              <option value="3" >Option 3</option>
+                                              <option value="4" >Option 4</option>
+                                            </select> 
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save Question</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="ms-auto">
+                        <img src="/static/images/icons/icons8-edit-100.png" alt="edit quiz of {{ q["associated_chapter"] }}" height="26px" width="32px" data-bs-toggle="modal" data-bs-target="#EditQuizModal{{q['id']}}">
+                        <span style="margin-left: 2px;"></span>
+                        |
+                        <span style="margin-right: 2px;"></span>
+                        <img src="/static/images/icons/icons8-delete.svg" alt="delete quiz of {{ q["associated_chapter"] }}" height="35px" width="35px" data-bs-toggle="modal" data-bs-target="#DeleteQuizModal{{q['id']}}">
+                    </div>
+
+                    <!-- Delete Quiz Modal -->
+                    <form action="/admin/delete/quiz/{{ q['id'] }}" method="POST" id="delete-quiz-{{ q['id'] }}">
+                        <div class="modal fade" id="DeleteQuizModal{{q['id']}}" tabindex="-1" aria-labelledby="QuizDelModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content"> 
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="QuizDelModalLabel">Delete Quiz</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body mt-2">
+                                        <p style="font-weight: 500;">
+                                            Are you sure you wanted to delete quiz "{{q_name[q['id']]}}"?
+                                        </p>                 
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Edit Quiz Modal -->
+                    <form action="/admin/edit/quiz/{{ q['id'] }}" method="POST" id="edit-quiz-{{ q['id'] }}">
+                        <div class="modal fade" id="EditQuizModal{{q['id']}}" tabindex="-1" aria-labelledby="QuizEditModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content"> 
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="QuizEditModalLabel">Edit Quiz</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3 mx-2">
+                                            <label for="floatingSub" class="text-secondary">Quiz on Chapter:</label>
+                                            <input type="text" class="form-control" id="floatingSub"  value="{{ q_chap_name[q['id']] }}" disabled>
+                                        </div>
+                                        <div class="mb-4 mx-2">
+                                            <label for="doqEdit-{{q['id']}}" class="text-secondary">Date of quiz</label>  
+                                            <input type="date" class="form-control" id="doqEdit-{{q['id']}}" value="{{ q['date_of_quiz'] }}" name="quiz_date" required/>
+                                        </div>
+                                        <div class="mb-3 mx-2">
+                                            <label for="selectDuration" class="text-secondary">Duration (hh:mm)</label>
+                                            <select name="quiz_duration" id="selectDuration" class="form-select" required>
+                                                <option value="" disabled>Select Duration</option>    
+                                            {% if duration[q['id']] == "00:30" %}
+                                                <option value="00:30" selected>00:30</option>
+                                            {% else %}
+                                                <option value="00:30" >00:30</option>
+                                            {% endif %}      
+
+                                            {% if duration[q['id']] == "01:00" %}
+                                                <option value="01:00" selected>01:00</option>
+                                            {% else %}
+                                                <option value="01:00" >01:00</option>
+                                            {% endif %}   
+                                            
+                                            {% if duration[q['id']] == "01:30" %}
+                                                <option value="01:30" selected>01:30</option>
+                                            {% else %}
+                                                <option value="01:30" >01:30</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "02:00" %}
+                                                <option value="02:00" selected>02:00</option>
+                                            {% else %}
+                                                <option value="02:00" >02:00</option>
+                                            {% endif %}   
+                                              
+                                            {% if duration[q['id']] == "02:30" %}
+                                                <option value="02:30" selected>02:30</option>
+                                            {% else %}
+                                                <option value="02:30" >02:30</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "03:00" %}
+                                                <option value="03:00" selected>03:00</option>
+                                            {% else %}
+                                                <option value="03:00" >03:00</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "03:30" %}
+                                                <option value="03:30" selected>03:30</option>
+                                            {% else %}
+                                                <option value="03:30" >03:30</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "04:00" %}
+                                                <option value="04:00" selected>04:00</option>
+                                            {% else %}
+                                                <option value="04:00" >04:00</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "04:30" %}
+                                                <option value="04:30" selected>04:30</option>
+                                            {% else %}
+                                                <option value="04:30" >04:30</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "05:00" %}
+                                                <option value="05:00" selected>05:00</option>
+                                            {% else %}
+                                                <option value="05:00" >05:00</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "05:30" %}
+                                                <option value="05:30" selected>05:30</option>
+                                            {% else %}
+                                                <option value="05:30" >05:30</option>
+                                            {% endif %}   
+
+                                            {% if duration[q['id']] == "06:00" %}
+                                                <option value="06:00" selected>06:00</option>
+                                            {% else %}
+                                                <option value="06:00" >06:00</option>
+                                            {% endif %}    
+
+                                            </select> 
+                                        </div>   
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Details Quiz Modal -->
+                    <div class="modal fade" id="DetailsQuizModal{{q['id']}}" tabindex="-1" aria-labelledby="QuizDetModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content mx-5"> 
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="QuizDetModalLabel">Quiz Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body mx-1">
+                                    <div class="mb-3">
+                                        <label for="floatingInput1" class="text-secondary">Quiz on Subject:</label>
+                                        <input type="text" class="form-control" id="floatingInput1"  value="{{q_sub_name[q['id']]}}" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="floatingInput2" class="text-secondary">Quiz on Chapter:</label>
+                                        <input type="text" class="form-control" id="floatingInput2"  value="{{q_chap_name[q['id']]}}" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="floatingInput3" class="text-secondary">No. of Questions:</label>
+                                        <input type="text" class="form-control" id="floatingInput3"  value="{{questions[q['id']]|length }}" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="floatingInput4" class="text-secondary">Total Marks:</label>
+                                        <input type="text" class="form-control" id="floatingInput4"  value="{{q['total_marks']}}" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="floatingInput5" class="text-secondary">Date of Quiz (YYYY-MM-DD):</label>
+                                        <input type="text" class="form-control" id="floatingInput5"  value="{{q['date_of_quiz']}}" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="floatingInput6" class="text-secondary">Duration (HH:MM:SS):</label>
+                                        <input type="text" class="form-control" id="floatingInput6"  value="{{q['time_duration']}}" disabled>
+                                    </div>   
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+            {% endfor %} 
+    </div>        
+    </div>
+    {% if search_flag == 0 %}
+    <!-- Add Quiz - button -->
+    <div class="floating-button" >
+        <img src="/static/images/icons/icons8-add-100.png" alt="add quiz button" height="65px" width="65px" data-bs-toggle="modal" data-bs-target="#QuizModal">
+    </div>
+    {% endif %}
+        {% endif %}
+
+{% if search_flag == 0 %}
+    <!-- Quiz Modal : Select Subject  -->
+     {% if subjects|length < 1 %}
+     <div class="modal fade" id="QuizModal" tabindex="-1" aria-labelledby="NoticeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content"> 
+                <div class="modal-header">
+                    <h5 class="modal-title text-secondary" id="NoticeLabel">Notice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                </div>
+                <div class="modal-body mt-2 mb-2 text-center">
+                    <a style="font-weight: 500; text-decoration: none;" href="/admin">
+                        Please add subjects to continue.
+                    </a>                 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="modal fade" id="QuizModal" tabindex="-1" aria-labelledby="QuizModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="QuizModalLabel">Add Quiz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center align-items-center">
+                    <div class="dropdown mt-3 mb-3">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" >
+                            Please select a Subject, to continue
+                        </button>
+                        <ul class="dropdown-menu select-overflow">
+                            {% for s in subjects %}
+                            <li>
+                                <a class="dropdown-item click" data-bs-toggle="modal" data-bs-target="#AddQuizModal{{s['id']}}">{{s['name']}}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    {% for s in subjects %}
+    <!--Add quiz - modal -->
+        {% if chapters[s['id']]|length < 1 %}
+    <div class="modal fade" id="AddQuizModal{{s['id']}}" tabindex="-1" aria-labelledby="NoticeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content"> 
+                <div class="modal-header">
+                    <h5 class="modal-title text-secondary" id="NoticeLabel">Notice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                </div>
+                <div class="modal-body mt-2 mb-2 text-center">
+                    <a style="font-weight: 500; text-decoration: none;" href="/admin/search/home?query_str={{ s['name'] }}">
+                        Please add chapters for {{ s['name'] }}.
+                    </a>                 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        {% else %}
+    <form action="/admin/add/quiz" method="POST" id="add-new-quiz">
+        <div class="modal fade" id="AddQuizModal{{s['id']}}" tabindex="-1" aria-labelledby="AddQuModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddQuModalLabel">Add Quiz</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3 mx-2">
+                            <label for="floatingSub" class="text-secondary">Subject Name:</label>
+                            <input type="text" class="form-control" id="floatingSub" value="{{ s['name'] }}" disabled>
+                            <input type="number" name="subject_id" value="{{ s['id'] }}" style="display: none;">
+                        </div>
+                        <div class="mb-4 mx-2">
+                            <label for="selectChap" class="text-secondary">Please select a Chapter</label>
+                            <select name="chapter_id" id="selectChap" class="form-select" required>
+                              <option value="" selected disabled>Select Chapter</option>
+                              {% for c in chapters[s['id']] %}
+                              <a><option value="{{c['id']}}">{{c['name']}}</option></a>
+                              {% endfor %}
+                            </select>                         
+                        </div>
+                        <div class="mb-4 mx-2">
+                            <label for="doq-{{s['id']}}" class="text-secondary">Date of quiz</label>  
+                            <input type="date" class="form-control" id="doq-{{s['id']}}" name="quiz_date" required/>
+                        </div>
+                        <div class="mb-3 mx-2">
+                            <label for="selectDuration" class="text-secondary">Duration ( hh:mm )</label>
+                            <select name="quiz_duration" id="selectDuration" class="form-select" required>
+                              <option value="" selected disabled>Select Duration</option>      
+                              <option value="00:30" >00:30</option>                    
+                              <option value="01:00" >01:00</option>
+                              <option value="01:30" >01:30</option>
+                              <option value="02:00" >02:00</option>
+                              <option value="02:30" >02:30</option>
+                              <option value="03:00" >03:00</option>
+                              <option value="03:30" >03:30</option>
+                              <option value="04:00" >04:00</option>
+                              <option value="04:30" >04:30</option>
+                              <option value="05:00" >05:00</option>
+                              <option value="05:30" >05:30</option>
+                              <option value="06:00" >06:00</option>
+                            </select> 
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+        {% endif %}
+    {% endfor %} 
+{% endif %}           
+                       
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // If the search field is cleared then reload the page with all Quizzes
+         document.getElementById("search_str").addEventListener("input", function() {
+             if (this.value === "") { // if the value becomes empty
+                 document.getElementById("search-quiz").submit(); // reloads
+             }
+         });
+
+         // Quiz add date check
+         document.querySelectorAll('[id^="doq-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                const quiz_date = new Date(this.value);
+                const current_date = new Date();
+                quiz_date.setHours(0, 0, 0, 0);
+                current_date.setHours(0, 0, 0, 0);
+
+                if (quiz_date < current_date) {
+                    alert("Quiz date must be on the current date or passed that.");
+                    event.preventDefault(); 
+                }
+            
+            });
+        });
+        // Quiz edit date check
+        document.querySelectorAll('[id^="doqEdit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                const quiz_date = new Date(this.value);
+                const current_date = new Date();
+                quiz_date.setHours(0, 0, 0, 0);
+                current_date.setHours(0, 0, 0, 0);
+
+                if (quiz_date < current_date) {
+                    alert("Quiz date must be on the current date or passed that.");
+                    event.preventDefault(); 
+                }
+            
+            });
+        });
+        
+        // New Question add field check
+        document.querySelectorAll('[id^="add-new-question-"]').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                let marks = this.querySelector('[id^="marks"]').value;
+                let title = this.querySelector('[id^="title"]').value.trim(); 
+                let statement = this.querySelector('[id^="statement"]').value.trim(); 
+                let option1 = this.querySelector('[id^="option1"]').value.trim(); 
+                let option2 = this.querySelector('[id^="option2"]').value.trim();
+                let option3 = this.querySelector('[id^="option3"]').value.trim();
+                let option4 = this.querySelector('[id^="option4"]').value.trim();
+                
+                if (marks < 1) {
+                    alert("Question Marks must be greater than 0.");
+                    event.preventDefault(); 
+                }
+                if (title === "") {
+                    alert("Question Title cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+                if (statement === "") {
+                    alert("Question Statement cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+                if (option1 === "" || option2 === "" || option3 === "" || option4 === "") {
+                    alert("Question Option fields cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+
+        // Edit Question field check
+        document.querySelectorAll('[id^="marksEdit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() < 1) {
+                    alert("Question Marks must be greater than 0.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="titleEdit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Question Title cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="statementEdit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Question Statement cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="option1Edit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Option 1 field cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="option2Edit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Option 2 field cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="option3Edit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Option 3 field cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="option4Edit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Option 4 field cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+
+     </script>
+
+</body>
+</html>

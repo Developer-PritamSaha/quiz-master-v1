@@ -1,0 +1,5 @@
+__pycache__/
+temp/
+admin_credentials.txt
+*.sqlite3
+*.log

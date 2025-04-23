@@ -1,0 +1,14 @@
+.navbar{
+    background: linear-gradient(106deg, #03142e, #001c4a, #002467, #002984, #1e2ba0, #1c3eb7, #1452ce, #0065e5, #0084ed);
+}
+body{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(108deg, #03142e, #001c4a, #002467, #002984, #1e2ba0, #1c3eb7, #1452ce, #0065e5, #0084ed, #009bde);
+    background-attachment: fixed;
+}
+
+.login-reg-box button:hover {
+    background: linear-gradient(235deg,#7652b4, #4b2c89, #3b1e79);
+}

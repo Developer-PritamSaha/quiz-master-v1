@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/images/icons/icons8-warning-100.png" type="image/x-icon">
+    <title>Alert</title>
+</head>
+<body>
+   <input type="text" id="alert-message" value="{{message}}"  style="display: none;">
+   <input type="text" id="redirect-url" value="{{redirect_after}}"  style="display: none;">
+   <script>
+      const alert_message = document.getElementById('alert-message').value
+      const redirect_url = document.getElementById('redirect-url').value
+      if (alert_message !== ""){
+         alert(alert_message);
+         window.location.href = redirect_url;
+      }
+   </script>
+   
+</body>
+</html>

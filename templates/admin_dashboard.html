@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="icon" href="/static/images/icons/icons8-quizlet-120.svg" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/admin_dashboard.css"/>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar sticky-top navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid justify-content-center border-info border-bottom border-opacity-25 border-1">
+            <a class="navbar-brand d-flex align-items-center"  href="/">
+                <img src="/static/images/icons/icons8-quizlet-120.svg" alt="Quiz-Master-Logo" width="40" height="40" class="d-inline-block  align-text-bottom">
+                <!-- Quiz Master -->
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="/admin" class="nav-link active">Home</a></li>
+                    <li><a href="/admin/quiz" class="nav-link ">Quiz</a></li>
+                    <li><a href="/admin/summary" class="nav-link ">Summary</a></li>
+                </ul>
+
+                <div class="container-fluid d-flex justify-content-center">
+                    <span class="navbar-text text-info fw-bold">
+                      Admin Dashboard
+                    </span>
+                </div>
+    
+                <form action="/admin/search/home" id="search-home" method="GET" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" name="query_str" id="search_str"  value="{{search_val}}" class="form-control" placeholder="⌕   Subject, Chapter..." aria-label="Search">
+                </form>
+
+                <ul class="navbar-nav d-flex flex-wrap align-items-center justify-content-center ">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img src="/static/images/icons/icons8-admin-1.png" 
+                            alt="Profile" class="rounded-circle" width="32" height="32"> 
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text">Welcome,</span></li>
+                        <li><span class="dropdown-item-text text-warning">{{ u_name }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>    
+                    </ul>
+                </li>
+                </ul>
+            </div>
+          </div>
+    </nav>
+
+    <!-- Subject cards -->
+    <div class="container mt-4"> 
+        {% if subjects|length < 1 %}
+            {% if search_flag == 1 %}
+        <div class="d-flex justify-content-center align-items-center mt-5">        
+            <img src="/static/images/placeholder_img/undraw_faq_h01d.svg" alt="No search result found" width="400px" height="460px" class="p-4"/>
+        </div>
+        <h5 class="text-white text-center">No Search Result Found.</h5>
+            {% else %}
+        <div class="d-flex justify-content-center align-items-center add-subject-img mt-5">
+            <img src="/static/images/placeholder_img/undraw_add-files_d04y.svg" alt="An image of add subject" width="400px" height="460px" class="p-4" data-bs-toggle="modal" data-bs-target="#SubjectModal"/>
+        </div>
+        <div class="clickable">
+            <h5 class="text-white text-center" data-bs-toggle="modal" data-bs-target="#SubjectModal">Add New Subject!</h5>
+        </div>
+            {% endif %}
+    </div>
+        {% else %}
+        <div class="row row-cols-1 row-cols-md-2 g-4 mb-3">
+                {% for s in subjects %}
+            <div class="col">
+                <div class="card mb-2 border border-primary-subtle shadow bg-body-tertiary rounded" >
+                    <div class="card-header text-center">
+                        <h4 style="color:rgb(73, 28, 146);font-weight: 650; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#DetailsSubjectModal{{s['id']}}">{{ s["name"] }}</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if chapters[s["id"]]|length >= 1 %}
+                        <div class="table-responsive">
+                            <table class="table allign-middle table-hover border-primary">
+                                <thead>
+                                    <tr>
+                                        <th style="color:rgb(9, 3, 97); text-align: center;">Chapter Name</th>
+                                        <th style="color:rgb(9, 3, 97); text-align: center;">No. of Questions</th>
+                                        <th style="color:rgb(9, 3, 97); text-align: center;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for c in chapters[s["id"]] %}
+                                    <tr>
+                                        <td class="text-center">
+                                            <a style="cursor: pointer; color: blueviolet; font-weight: 500; " data-bs-toggle="modal" data-bs-target="#DetailsChapterModal{{c['id']}}" >{{ c["name"] }}</a>
+                                        </td>
+                                        <td class="text-success text-center">{{ c["no_questions"] }}</td>
+                                        <td class="text-center">          
+                                            <img src="/static/images/icons/icons8-edit.svg" alt="edit chapter {{ c['name'] }}" height="20px" width="20px" data-bs-toggle="modal" data-bs-target="#EditChapterModal{{c['id']}}"> 
+                                            <span style="margin-right: 2px;"></span>
+                                                |
+                                            <span style="margin-left: 2px;"></span>
+                                            <img src="/static/images/icons/icons8-delete1.svg" alt="delete chapter {{ c['name'] }}" height="20px" width="20px" data-bs-toggle="modal" data-bs-target="#DeleteChapterModal{{c['id']}}">       
+                                        </td>
+                                    </tr>
+                                    <!-- Delete Chapter Modal -->
+                                    <form action="/admin/delete/chapter/{{ c['id'] }}" method="POST" id="delete-chapter-{{ c['id'] }}">
+                                        <div class="modal fade" id="DeleteChapterModal{{c['id']}}" tabindex="-1" aria-labelledby="ChapDelModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content"> 
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="ChapDelModalLabel">Delete Chapter</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body mt-2">
+                                                        <p style="font-weight:500;">Are you sure you wanted to delete chapter "{{ c['name'] }}"?</p>                 
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- Edit Chapter Modal -->
+                                    <form action="/admin/edit/chapter/{{ s['id'] }}/{{ c['id'] }}" method="POST" id="edit-chapter-{{c['id']}}">
+                                        <div class="modal fade" id="EditChapterModal{{ c['id'] }}" tabindex="-1" aria-labelledby="ChapEditModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content"> 
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="ChapEditModalLabel">Edit Chapter</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control" id="chap-name-edit-{{c['id']}}" placeholder="HTML,CSS etc." name="chapter_name" value="{{ c['name'] }}" required>
+                                                            <label for="chap-name-edit-{{c['id']}}">Chapter Name</label>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <textarea class="form-control" placeholder="Give a brief description.." id="chap-desc-edit-{{c['id']}}" style="height: 100px" name="chapter_description" required>{{ c['description'] }}</textarea>
+                                                            <label for="chap-desc-edit-{{c['id']}}">Description</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Update</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- Details Chapter Modal -->
+                                    <div class="modal fade" id="DetailsChapterModal{{c['id']}}" tabindex="-1" aria-labelledby="ChapDetModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content"> 
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="ChapDetModalLabel">Chapter Details</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3 mx-2">
+                                                        <label for="floatingInput" class="text-secondary">Chapter Name:</label>
+                                                        <input type="text" class="form-control" id="floatingInput"  value="{{ c['name'] }}" disabled>
+                                                    </div>
+                                                    <div class="mb-2 mx-2">
+                                                        <label for="floatingTextarea" class="text-secondary">Description:</label>
+                                                        <textarea class="form-control" id="floatingTextarea" style="height: 80px" disabled>{{ c['description'] }}</textarea>
+                                                    </div>    
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        {% else %}
+                        <p id="new-chap" data-bs-toggle="modal" data-bs-target="#ChapterModal{{s['id']}}">Add new chapters!</p>
+                        {% endif %}
+                        
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <button type="button" style="font-weight: 500;" class="btn btn-outline-secondary mt-auto" data-bs-toggle="modal" data-bs-target="#ChapterModal{{s['id']}}">
+                        + Chapter
+                        </button>
+                                    
+                        <!-- Add new chapter modal -->
+                        <form action="/admin/add/{{ s['id'] }}/chapter" method="POST" id="add-chapter-{{s['id']}}">
+                            <div class="modal fade" id="ChapterModal{{s['id']}}" tabindex="-1" aria-labelledby="ChapterModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="ChapterModalLabel">Add Chapter</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="chap-name-input-{{s['id']}}" placeholder="HTML,CSS etc." name="chapter_name" required>
+                                                <label for="chap-name-input-{{s['id']}}">Chapter Name</label>
+                                            </div>
+                                            <div class="form-floating">
+                                                <textarea class="form-control" placeholder="Give a brief description.." id="chap-desc-add-{{s['id']}}" style="height: 100px" name="chapter_description" required></textarea>
+                                                <label for="chap-desc-add-{{s['id']}}">Description</label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save Chapter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="ms-auto">
+                            <img src="/static/images/icons/icons8-edit-100.png" alt="edit subject {{ s["name"] }}" height="26px" width="32px" data-bs-toggle="modal" data-bs-target="#EditSubjectModal{{s['id']}}">
+                            <span style="margin-left: 2px;"></span>
+                            |
+                            <span style="margin-right: 2px;"></span>
+                            <img src="/static/images/icons/icons8-delete.svg" alt="delete subject {{ s["name"] }}" height="35px" width="35px" data-bs-toggle="modal" data-bs-target="#DeleteSubjectModal{{s['id']}}">
+                        </div>
+
+                        <!-- Delete Subject Modal -->
+                        <form action="/admin/delete/subject/{{ s['id'] }}" method="POST" id="delete-subject-{{ s['id'] }}">
+                            <div class="modal fade" id="DeleteSubjectModal{{s['id']}}" tabindex="-1" aria-labelledby="SubDelModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="SubDelModalLabel">Delete Subject</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                        </div>
+                                        <div class="modal-body mt-2">
+                                            <p style="font-weight: 500;">Are you sure you wanted to delete subject "{{ s['name'] }}"?</p>                 
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Edit Subject Modal -->
+                        <form action="/admin/edit/subject/{{ s['id'] }}" method="POST" id="edit-subject-{{s['id']}}">
+                            <div class="modal fade" id="EditSubjectModal{{s['id']}}" tabindex="-1" aria-labelledby="SubEditModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="SubEditModalLabel">Edit Subject</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="sub-name-edit-{{s['id']}}" placeholder="Java,Application Development etc." name="subject_name" value="{{ s['name'] }}" required>
+                                                <label for="sub-name-edit-{{s['id']}}">Subject Name</label>
+                                            </div>
+                                            <div class="form-floating">
+                                                <textarea class="form-control" placeholder="Give a brief description.." id="sub-desc-edit-{{s['id']}}" style="height: 100px" name="subject_description" required>{{ s['description'] }}</textarea>
+                                                <label for="sub-desc-edit-{{s['id']}}">Description</label>
+                                            </div>    
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Update</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Details Subject Modal -->
+                        <div class="modal fade" id="DetailsSubjectModal{{s['id']}}" tabindex="-1" aria-labelledby="SubDetModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content"> 
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="SubDetModalLabel">Subject Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3 mx-2">
+                                            <label for="floatingInput" class="text-secondary">Subject Name:</label>
+                                            <input type="text" class="form-control" id="floatingInput"  value="{{ s['name'] }}" disabled>
+                                        </div>
+                                        <div class="mb-2 mx-2">
+                                            <label for="floatingTextarea" class="text-secondary">Description:</label>
+                                            <textarea class="form-control" id="floatingTextarea" style="height: 80px" disabled>{{ s['description'] }}</textarea>
+                                        </div>     
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        {% endfor %} 
+        </div>        
+    </div>
+    {% if search_flag == 0 %}
+    <!-- Add Subject - button -->
+    <div class="floating-button" >
+        <img src="/static/images/icons/icons8-add-100.png" alt="add subject button" height="65px" width="65px" data-bs-toggle="modal" data-bs-target="#SubjectModal">
+    </div>
+    {% endif %}
+        {% endif %}
+
+{% if search_flag == 0 %}
+    <!--Add Subject - modal -->
+    <form action="/admin/add/subject" method="POST" id="add-new-subject">
+        <div class="modal fade" id="SubjectModal" tabindex="-1" aria-labelledby="SubjectModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="SubjectModalLabel">Add Subject</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="sub-name-input" placeholder="Java,Application Development etc." name="subject_name" required>
+                            <label for="sub-name-input">Subject Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Give a brief description.." id="sub-desc-add" style="height: 100px" name="subject_description" required></textarea>
+                            <label for="sub-desc-add">Description</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Subject</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endif %}   
+              
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+       // If the search field is cleared then reload the page with all subjects and chapters
+        document.getElementById("search_str").addEventListener("input", function() {
+            if (this.value === "") {
+                document.getElementById("search-home").submit();
+            }
+        });
+
+        // Subject Input field checks
+        document.getElementById('add-new-subject').addEventListener('submit', function(event) {
+            let sub_name = document.getElementById('sub-name-input').value.trim(); 
+            let sub_desc = document.getElementById('sub-desc-add').value.trim(); 
+
+            if (sub_name === "") {
+                alert("Subject Name cannot be empty or only spaces.");
+                event.preventDefault(); 
+            }
+            if (sub_desc === "") {
+                alert("Subject Description cannot be empty or only spaces.");
+                event.preventDefault(); 
+            }
+        });
+        document.querySelectorAll('[id^="edit-subject-"]').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                let sub_name_edit = this.querySelector('[id^="sub-name-edit"]').value.trim(); 
+                let sub_desc_edit = this.querySelector('[id^="sub-desc-edit"]').value.trim(); 
+
+                if (sub_name_edit === "") {
+                    alert("Subject Name cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+                if (sub_desc_edit === "") {
+                    alert("Subject Description cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+
+        // Chapter Input field checks
+        document.querySelectorAll('[id^="add-chapter-"]').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                let chap_name = this.querySelector('[id^="chap-name-input"]').value.trim(); 
+                let chap_desc = this.querySelector('[id^="chap-desc-add"]').value.trim(); 
+
+                if (chap_name === "") {
+                    alert("Chapter Name cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+                if (chap_desc === "") {
+                    alert("Chapter Description cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="chap-name-edit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Chapter Name cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+        document.querySelectorAll('[id^="chap-desc-edit-"]').forEach(input => {
+            input.addEventListener('blur', function(event) {
+                if (input.value.trim() === "") {
+                    alert("Chapter Description cannot be empty or only spaces.");
+                    event.preventDefault(); 
+                }
+            });
+        });
+
+    </script>
+
+</body>
+</html>

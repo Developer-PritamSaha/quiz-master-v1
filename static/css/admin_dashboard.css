@@ -1,0 +1,85 @@
+.navbar{
+    background: linear-gradient(298deg,  #00aace, #0074ae, #003e83, #08084c);
+}
+body{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(308deg, #57e1e7, #00aace, #0074ae, #003e83, #08084c);
+    background-attachment: fixed;
+}
+.card{
+    min-height: 355px; 
+}
+.card-body #new-chap {
+    text-align: center;
+    padding-top: 80px;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: #0074ae;
+    font-weight: 500;
+}
+.card-body #new-chap:hover{
+    font-weight: 550;
+    color: #003e83;
+    cursor: pointer;
+}
+.card-body img:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.table-responsive{
+    max-height: 210px; 
+    overflow-y: auto;
+}
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-responsive thead th {
+    position: sticky;
+    top: 0; 
+    background: rgb(241, 246, 250);
+    border-bottom: 2px solid #041062;
+    z-index: 10;
+}
+.card-footer img:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.floating-button {
+  position: fixed;
+  bottom:55PX;
+  right:35px;
+  
+}
+
+.floating-button img:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+  
+.add-subject-img img:hover{
+    transform: scale(1.02) rotate(3deg);
+    cursor: pointer;
+}
+
+.add-quiz-img img:hover{
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.clickable h5:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.select-overflow {
+    max-height: 200px; 
+    overflow-y: auto; 
+}
+
+.click{
+    cursor:pointer;
+}

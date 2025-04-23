@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="icon" href="/static/images/icons/icons8-quizlet-120.svg" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/user_dashboard.css"/>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar sticky-top navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid justify-content-center border-info border-bottom border-opacity-25 border-1">
+            <a class="navbar-brand d-flex align-items-center"  href="/">
+                <img src="/static/images/icons/icons8-quizlet-120.svg" alt="Quiz-Master-Logo" width="40" height="40" class="d-inline-block  align-text-bottom">
+                
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="/user" class="nav-link active">Home</a></li>
+                    <li><a href="/user/scores" class="nav-link ">Scores</a></li>
+                    <li><a href="/user/summary" class="nav-link ">Summary</a></li>
+                </ul>
+
+                <div class="container-fluid d-flex justify-content-center">
+                    <span class="navbar-text text-info fw-bold">
+                      User Dashboard
+                    </span>
+                </div>
+    
+                <form action="/user/search/quiz" id="search-quizzes" method="GET" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" name="query_str" id="search_str"  value="{{search_val}}" class="form-control" placeholder="⌕   Quiz ID, Date..." aria-label="Search">
+                </form>
+                
+                <ul class="navbar-nav d-flex flex-wrap align-items-center justify-content-center ">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img src="/static/images/icons/icons8-admin-1.png" 
+                            alt="Profile" class="rounded-circle" width="32" height="32">       
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text">Welcome,</span></li>
+                        <li><span class="dropdown-item-text text-info">{{ u_name }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>    
+                    </ul>
+                </li>
+                </ul>
+            </div>
+          </div>
+    </nav>
+
+    <!--Upcoming Quiz Table -->
+    <div class="container mt-4"> 
+        {% if quizzes|length < 1 %}
+        <div class="d-flex justify-content-center align-items-center mt-5">
+            {% if search_flag == 1 %}
+            <img src="/static/images/placeholder_img/undraw_faq_h01d.svg" alt="No search result found" width="400px" height="460px" class="p-4"/>
+        </div>
+        <h5 class="text-white text-center">No Search Result Found.</h5>
+            {% else %}      
+            <img src="/static/images/placeholder_img/undraw_reading-time_gcvc.svg" alt="No quiz available right now" width="420px" height="460px" class="p-4"/>
+        </div>
+        <h5 class="text-white text-center">No Quiz Available Right Now.</h5>
+            {% endif %}
+    </div>
+        {% else %}
+        <div class="row justify-content-center">  
+            <div class="col">
+                <div class="card border border-primary-subtle shadow bg-body-tertiary rounded">
+                    <div class="card-header">
+                        <h3 style="color:rgb(86, 40, 161);font-weight: 650; text-align: center;">Upcoming Quizzes</h3>
+                    </div>
+                    <div class="card-body ">
+                        <div class="table-responsive">
+                            <table class="table allign-middle table-hover border-primary">
+                                <thead>
+                                    <tr>
+                                        <th style="color:rgb(9, 3, 97);  text-align: center;">Serial no.</th>
+                                        <th style="color:rgb(9, 3, 97);  text-align: center;">Quiz ID</th>
+                                        <th style="color:rgb(9, 3, 97);  text-align: center;">Quiz on Chapter</th>
+                                        <th style="color:rgb(9, 3, 97);  text-align: center;">Date of Quiz</th>
+                                        <th style="color:rgb(9, 3, 97);  text-align: center;">Duration (HH:MM:SS)</th>
+                                        <th style="color:rgb(9, 3, 97);  text-align: center;">Actions</th>    
+                                    </tr>                                   
+                                </thead>
+                               
+                                <tbody>
+                                {% for q in quizzes %}
+                                    <tr>
+                                        <td style="color: rgb(40, 2, 110); font-weight: 500; text-align: center;">
+                                            {{ loop.index }}
+                                        </td>
+                                        <td class="click text-center">
+                                            <a style="color: rgb(100, 14, 181); font-weight: 700; text-align: center;" data-bs-toggle="modal" data-bs-target="#DetailsQuizModal{{q['id']}}"> {{ q['id'] }}      
+                                            </a>
+                                        </td>
+                                        <td style="color: rgb(72, 5, 134); font-weight: 600; text-align: center;">
+                                            {{ chap_name[ q['chapter_id'] ] }}
+                                        </td>
+                                        <td style="color: rgb(4, 56, 93); font-weight: 700; text-align: center;">{{ q_date[q['id']] }}</td>
+                                        <td style="color: rgb(4, 122, 59); font-weight: 600; text-align: center;">{{ q["time_duration"] }}</td>
+                                        <td style="text-align: center;">          
+                                            <!-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#DetailsQuizModal{{q['id']}}">View</button> -->
+                                            <img src="/static/images/icons/icons8-view-96.png" alt="view quiz {{ q['id'] }}" height="42px" width="42px" data-bs-toggle="modal" data-bs-target="#DetailsQuizModal{{q['id']}}">
+                                            <span style="margin-right: 2px;"></span>
+                                                |
+                                            <span style="margin-left: 2px;"></span>
+                                            <!-- <a href="/"><button class="btn btn-primary border border-info">Start</button></a> -->
+                                            <a href="/start/quiz/{{q['id']}}"><img src="/static/images/icons/icons8-start-100.png" alt="start quiz {{ q['id'] }}" height="45px" width="45px"></a>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Details Quiz Modal -->
+                                    <div class="modal fade" id="DetailsQuizModal{{q['id']}}" tabindex="-1" aria-labelledby="QuizDetModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content mx-2">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="QuizDetModalLabel">Quiz Details</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body mx-5">
+                                                    <div class="row align-items-center mx-5 mb-3">
+                                                        <label for="floatingInput1" class="text-secondary text-center">Quiz ID :</label> 
+                                                        <input type="text" class="form-control text-center" id="floatingInput1"  value="{{q['id']}}" disabled>
+                                                    </div>
+        
+                                                    <div class="row align-items-center mb-3 mx-3">              
+                                                        <label for="floatingInput2" class="text-secondary">Subject :</label>                                                  
+                                                        <input type="text" class="form-control text-center" id="floatingInput2"  value="{{sub_name[q['chapter_id']]}}" disabled>   
+                                                    </div>
+
+                                                    <div class="row align-items-center mb-4 mx-3">
+                                                        <label for="floatingInput3" class="text-secondary">Chapter :</label>
+                                                        <input type="text" class="form-control text-center" id="floatingInput3"  value="{{chap_name[q['chapter_id']]}}" disabled>
+                                                    </div>
+
+                                                    <div class="row mb-3 mx-5">
+                                                        <label for="floatingInput4" class="text-secondary">No. of Questions :</label>
+                                                        <input type="text" class="form-control" id="floatingInput4"  value="{{no_questions[q['id']]}}" disabled>
+                                                    </div>
+
+                                                    <div class="row mb-4 mx-5">                                           
+                                                        <label for="floatingInput5" class="text-secondary">Total Marks :</label>
+                                                        <input type="text" class="form-control" id="floatingInput5"  value="{{q['total_marks']}}" disabled>
+                                                    </div>
+
+                                                    <div class="row mx-5 align-items-center mb-3 ">
+                                                        <label for="floatingInput6" class="text-secondary">Date of Quiz (DD-MM-YYYY):</label>
+                                                        <input type="text" class="form-control text-center" id="floatingInput6" value="{{q_date[q['id']]}}" disabled>
+                                                    </div>
+                                                   
+                                                    <div class="row d-flex justify-content-center mb-2 mx-5">
+                                                        <label for="floatingInput7" class="text-secondary">Duration (HH:MM:SS):</label>
+                                                        <input type="text" class="form-control text-center" id="floatingInput7"  value="{{q['time_duration']}}" disabled>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+                                </tbody>
+                               
+                            </table>         
+                        </div>           
+                    </div>
+                </div>
+            </div>        
+        </div>        
+    </div>
+        {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // If the search field is cleared then reloads the page with all Upcomming quizzes
+         document.getElementById("search_str").addEventListener("input", function() {
+             if (this.value === "") {
+                 document.getElementById("search-quizzes").submit();
+             }
+         });
+     </script>
+
+</body>
+</html>

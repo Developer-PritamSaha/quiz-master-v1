@@ -1,0 +1,28 @@
+#user-summary-navbar{
+    background: linear-gradient(110deg,  #08084c, #131a5e, #1e2c71, #293e83, #345096, #3a56a1, #415bab, #4861b6, #515aba, #5d51bd, #7652c4);
+}
+#user-summary-body{
+    background: linear-gradient(102deg,  #08084c, #131a5e, #1e2c71, #293e83, #345096, #3a56a1, #415bab, #4861b6, #515aba, #5d51bd, #7652c4, #9f5bdf);
+    background-attachment: fixed;
+}
+
+#admin-summary-navbar{
+    background: linear-gradient(298deg,  #00aace, #0074ae, #003e83, #08084c);
+}
+#admin-summary-body{
+    background: linear-gradient(308deg, #57e1e7, #00aace, #0074ae, #003e83, #08084c);
+    background-attachment: fixed;
+}
+canvas {
+    max-width: 100% ;  
+    max-height: 38vh ; 
+}
+
+#quiz-score-wise{
+    max-width: 100% ;  
+    max-height: 42vh ; 
+}
+#sub-top-score{
+    max-width: 100% ;  
+    max-height: 42vh ;
+}
