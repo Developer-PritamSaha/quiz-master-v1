@@ -70,7 +70,7 @@ Upon the initial execution of the app, an **admin user** is automatically create
 
 **Important Notes:**
 - The admin credentials **are not resettable** via the app at this time.
-- If the **admin_credentials.txt** file is deleted and you donot remeber the credentials, you must **delete** the **QuizMasterDb.sqlite3** file and restart the app to create a new admin user with fresh credentials.
+- If the **admin_credentials.txt** file is deleted and you donot remember the credentials, you must **delete** the **QuizMasterDb.sqlite3** file and restart the app to create a new admin user with fresh credentials.
 - The credentials are stored directly in the database, and **if lost, they cannot be recovered**.
 
 ## 🛠 Tech Stack
