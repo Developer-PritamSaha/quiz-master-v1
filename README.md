@@ -4,9 +4,9 @@
 
 <p>
   <img src="docs/screenshots/Quiz_master_landing_page.png" alt="Quiz Master Landing Page" height="260" width="480">
-  <img src="docs/screenshots/Admin_dashboard_home.png" alt="Admin Dashboard home page" height="260" width="480">
   <img src="docs/screenshots/Admin_dashboard_summary.png" alt="Admin Dashboard summary page" height="260" width="480">
   <img src="docs/screenshots/User_dashboard_home.png" alt="User Dashboard" height="260" width="480">
+  <img src="docs/screenshots/Quiz_dashboard.png" alt="Quiz Dashboard" height="260" width="480">
 <p>
 
 
@@ -66,11 +66,11 @@ python app.py
 
 ## 🔒 Admin Credentials Initialization
 
-Upon the first run of the app, an **admin user** is automatically created with **unique credentials** each time a new database is initialized. These credentials are stored within the **./quiz-master-v1/database** directory. However, if the **admin_credentials.txt** file is **deleted**, the admin credentials will be lost(unless you remebered them or have a backup), and you'll need to delete the entire **QuizMasterDB.sqlite3** database and restart the app to initialize a new one to generate a new admin.
+Upon the initial execution of the app, an **admin user** is automatically created with **unique credentials** each time a new database is initialized. These credentials are stored within the **./quiz-master-v1/database** directory.
 
 **Important Notes:**
 - The admin credentials **are not resettable** via the app at this time.
-- If the database file is deleted, **you must delete the entire database** and restart the app to create a new admin user with fresh credentials.
+- If the **admin_credentials.txt** file is deleted and you donot remeber the credentials, you must **delete** the **QuizMasterDb.sqlite3** file and restart the app to create a new admin user with fresh credentials.
 - The credentials are stored directly in the database, and **if lost, they cannot be recovered**.
 
 ## 🛠 Tech Stack
